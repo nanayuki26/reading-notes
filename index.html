@@ -64,9 +64,41 @@ button {
   font-size: 0.92rem;
   cursor: pointer;
 }
-button:focus-visible {
+button:focus-visible,
+.search:focus-visible {
   outline: 2px solid var(--primary);
   outline-offset: 2px;
+}
+.controls { margin-bottom: 20px; }
+.search {
+  width: 100%;
+  min-height: 42px;
+  padding: 7px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+}
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+.filter-button {
+  min-height: 32px;
+  padding: 2px 10px;
+  border-color: var(--border);
+  border-radius: 999px;
+  color: var(--text);
+  font-size: 0.82rem;
+  overflow-wrap: anywhere;
+}
+.filter-button[aria-pressed="true"] {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: var(--background);
 }
 .book {
   margin-bottom: 14px;
@@ -118,18 +150,26 @@ button:focus-visible {
 <p class="updated">2冊 ・ 最終更新 2026-11-02</p>
 <button type="button" id="toggle-all" class="toggle-all">すべてのネタバレを表示</button>
 </header>
+<div class="controls">
+<input type="search" id="search" class="search" placeholder="タイトル・著者・タグ・感想を検索" aria-label="本を検索">
+<div class="filters" role="group" aria-label="タグで絞り込み"><button type="button" class="filter-button" data-tag="SF" aria-pressed="false">#SF</button><button type="button" class="filter-button" data-tag="重い" aria-pressed="false">#重い</button></div>
+</div>
 <main>
 <article class="book">
 <h2 class="book-title">テスト本</h2>
 <p class="book-author">ああああ</p>
-<p class="review">ネタバレなし</p>
+<p class="review">ネタバレなし　犯人はAAA</p>
 <button type="button" class="spoiler-toggle" aria-expanded="false" aria-controls="spoiler-0">ネタバレを見る</button>
-<div id="spoiler-0" class="spoiler" hidden><p class="review">ねたばれあり</p></div>
+<div id="spoiler-0" class="spoiler" hidden><p class="review">ねたばれあり　犯人はBBB</p></div>
 </article>
 <article class="book">
 <h2 class="book-title">テスト2　直接公開できるか</h2>
 <p class="book-author">ああ</p>
+<div class="filters book-tags"><button type="button" class="filter-button" data-tag="重い" aria-pressed="false">#重い</button><button type="button" class="filter-button" data-tag="SF" aria-pressed="false">#SF</button></div>
+<button type="button" class="spoiler-toggle" aria-expanded="false" aria-controls="spoiler-1">ネタバレを見る</button>
+<div id="spoiler-1" class="spoiler" hidden><p class="review">@</p></div>
 </article>
+<p id="no-results" class="empty" role="status" hidden>条件に合う本はありません。</p>
 </main>
 </div>
 <script>
@@ -161,6 +201,75 @@ button:focus-visible {
     buttons.forEach(function (button) { setOpen(button, open); });
     updateToggleAll();
   });
+})();
+
+(function () {
+  var searchInput = document.getElementById('search');
+  if (!searchInput) return;
+
+  var noResults = document.getElementById('no-results');
+  var filterButtons = Array.prototype.slice.call(document.querySelectorAll('.filter-button'));
+  var currentWeight = '';
+  var currentTag = '';
+
+  function toComparable(text) {
+    return text.normalize('NFKC').toLowerCase();
+  }
+
+  // ネタバレは検索の対象にしない
+  function readSearchText(article) {
+    return toComparable(Array.prototype.slice.call(article.children)
+      .filter(function (element) { return !element.matches('.spoiler, .spoiler-toggle, .stars'); })
+      .map(function (element) { return element.textContent; })
+      .join('\n'));
+  }
+
+  var books = Array.prototype.slice.call(document.querySelectorAll('.book')).map(function (article) {
+    var weightButton = article.querySelector('[data-weight]');
+    return {
+      article: article,
+      text: readSearchText(article),
+      weight: weightButton ? weightButton.getAttribute('data-weight') : '',
+      tags: Array.prototype.slice.call(article.querySelectorAll('[data-tag]')).map(function (button) {
+        return button.getAttribute('data-tag');
+      }),
+    };
+  });
+
+  function update() {
+    var words = toComparable(searchInput.value).split(/\s+/).filter(Boolean);
+    var visibleCount = 0;
+
+    books.forEach(function (book) {
+      var visible = (!currentWeight || book.weight === currentWeight)
+        && (!currentTag || book.tags.indexOf(currentTag) !== -1)
+        && words.every(function (word) { return book.text.indexOf(word) !== -1; });
+      book.article.hidden = !visible;
+      if (visible) visibleCount += 1;
+    });
+    noResults.hidden = visibleCount > 0;
+
+    filterButtons.forEach(function (button) {
+      var pressed = button.hasAttribute('data-tag')
+        ? button.getAttribute('data-tag') === currentTag
+        : button.getAttribute('data-weight') === currentWeight;
+      button.setAttribute('aria-pressed', String(pressed));
+    });
+  }
+
+  filterButtons.forEach(function (button) {
+    button.addEventListener('click', function () { // もう一度押すと解除する
+      if (button.hasAttribute('data-tag')) {
+        var tag = button.getAttribute('data-tag');
+        currentTag = currentTag === tag ? '' : tag;
+      } else {
+        var weight = button.getAttribute('data-weight');
+        currentWeight = currentWeight === weight ? '' : weight;
+      }
+      update();
+    });
+  });
+  searchInput.addEventListener('input', update);
 })();
 </script>
 </body>
