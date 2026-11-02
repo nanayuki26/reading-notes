@@ -1,0 +1,4 @@
+# 公開するのは index.html だけ。バックアップなどを誤って置いても公開されないようにする
+*
+!index.html
+!.gitignore
