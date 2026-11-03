@@ -136,6 +136,12 @@ button:focus-visible,
   border-radius: 8px;
   background: var(--spoiler);
 }
+.spoiler-tags {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+  overflow-wrap: anywhere;
+}
 .empty {
   padding: 32px 0;
   color: var(--muted);
@@ -147,12 +153,13 @@ button:focus-visible,
 <div class="page">
 <header>
 <h1>読書備忘録</h1>
-<p class="updated">2冊 ・ 最終更新 2026-11-03</p>
+<p class="updated">4冊 ・ 最終更新 2026-11-03</p>
 <button type="button" id="toggle-all" class="toggle-all">すべてのネタバレを表示</button>
 </header>
 <div class="controls">
-<input type="search" id="search" class="search" placeholder="タイトル・著者・タグ・感想を検索" aria-label="本を検索">
-<div class="filters" role="group" aria-label="読む重さで絞り込み"><button type="button" class="filter-button" data-weight="medium" aria-pressed="false">ふつう</button></div>
+<input type="search" id="search" class="search" placeholder="タイトル・著者・ジャンル・タグ・感想を検索" aria-label="本を検索">
+<div class="filters" role="group" aria-label="ジャンルで絞り込み"><button type="button" class="filter-button" data-genre="SF" aria-pressed="false">SF</button><button type="button" class="filter-button" data-genre="ミステリー" aria-pressed="false">ミステリー</button></div>
+<div class="filters" role="group" aria-label="読む重さで絞り込み"><button type="button" class="filter-button" data-weight="light" aria-pressed="false">軽め</button><button type="button" class="filter-button" data-weight="medium" aria-pressed="false">ふつう</button></div>
 <div class="filters" role="group" aria-label="タグで絞り込み"><button type="button" class="filter-button" data-tag="キャラクター〇" aria-pressed="false">#キャラクター〇</button><button type="button" class="filter-button" data-tag="テンポ〇" aria-pressed="false">#テンポ〇</button></div>
 </div>
 <main>
@@ -160,16 +167,30 @@ button:focus-visible,
 <h2 class="book-title">テスト2　直接公開できるか</h2>
 <p class="book-author">ああ</p>
 <p class="stars" aria-label="評価 3 / 5">★★★☆☆</p>
-<div class="filters book-tags"><button type="button" class="filter-button" data-weight="medium" aria-pressed="false">ふつう</button><button type="button" class="filter-button" data-tag="テンポ〇" aria-pressed="false">#テンポ〇</button><button type="button" class="filter-button" data-tag="キャラクター〇" aria-pressed="false">#キャラクター〇</button></div>
+<div class="filters book-tags"><button type="button" class="filter-button" data-genre="ミステリー" aria-pressed="false">ミステリー</button><button type="button" class="filter-button" data-weight="medium" aria-pressed="false">ふつう</button><button type="button" class="filter-button" data-tag="テンポ〇" aria-pressed="false">#テンポ〇</button><button type="button" class="filter-button" data-tag="キャラクター〇" aria-pressed="false">#キャラクター〇</button></div>
 <button type="button" class="spoiler-toggle" aria-expanded="false" aria-controls="spoiler-0">ネタバレを見る</button>
 <div id="spoiler-0" class="spoiler" hidden><p class="review">@</p></div>
 </article>
 <article class="book">
+<h2 class="book-title">ピラネージ</h2>
+<p class="book-author">Susanna Clarke</p>
+<p class="stars" aria-label="評価 3 / 5">★★★☆☆</p>
+<div class="filters book-tags"><button type="button" class="filter-button" data-genre="SF" aria-pressed="false">SF</button><button type="button" class="filter-button" data-weight="medium" aria-pressed="false">ふつう</button></div>
+</article>
+<article class="book">
+<h2 class="book-title">プロジェクト・ヘイル・メアリー</h2>
+<p class="book-author">Andy Weir</p>
+<p class="stars" aria-label="評価 5 / 5">★★★★★</p>
+<div class="filters book-tags"><button type="button" class="filter-button" data-genre="SF" aria-pressed="false">SF</button><button type="button" class="filter-button" data-weight="light" aria-pressed="false">軽め</button><button type="button" class="filter-button" data-tag="キャラクター〇" aria-pressed="false">#キャラクター〇</button><button type="button" class="filter-button" data-tag="テンポ〇" aria-pressed="false">#テンポ〇</button></div>
+</article>
+<article class="book">
 <h2 class="book-title">テスト本</h2>
 <p class="book-author">ああああ</p>
+<p class="stars" aria-label="評価 4 / 5">★★★★☆</p>
+<div class="filters book-tags"><button type="button" class="filter-button" data-genre="ミステリー" aria-pressed="false">ミステリー</button></div>
 <p class="review">ネタバレなし　犯人はAAA</p>
-<button type="button" class="spoiler-toggle" aria-expanded="false" aria-controls="spoiler-1">ネタバレを見る</button>
-<div id="spoiler-1" class="spoiler" hidden><p class="review">ねたばれあり　犯人はBBB</p></div>
+<button type="button" class="spoiler-toggle" aria-expanded="false" aria-controls="spoiler-3">ネタバレを見る</button>
+<div id="spoiler-3" class="spoiler" hidden><p class="review">ねたばれあり　犯人はBBB</p></div>
 </article>
 <p id="no-results" class="empty" role="status" hidden>条件に合う本はありません。</p>
 </main>
@@ -211,6 +232,7 @@ button:focus-visible,
 
   var noResults = document.getElementById('no-results');
   var filterButtons = Array.prototype.slice.call(document.querySelectorAll('.filter-button'));
+  var currentGenre = '';
   var currentWeight = '';
   var currentTag = '';
 
@@ -227,10 +249,12 @@ button:focus-visible,
   }
 
   var books = Array.prototype.slice.call(document.querySelectorAll('.book')).map(function (article) {
+    var genreButton = article.querySelector('[data-genre]');
     var weightButton = article.querySelector('[data-weight]');
     return {
       article: article,
       text: readSearchText(article),
+      genre: genreButton ? genreButton.getAttribute('data-genre') : '',
       weight: weightButton ? weightButton.getAttribute('data-weight') : '',
       tags: Array.prototype.slice.call(article.querySelectorAll('[data-tag]')).map(function (button) {
         return button.getAttribute('data-tag');
@@ -243,7 +267,8 @@ button:focus-visible,
     var visibleCount = 0;
 
     books.forEach(function (book) {
-      var visible = (!currentWeight || book.weight === currentWeight)
+      var visible = (!currentGenre || book.genre === currentGenre)
+        && (!currentWeight || book.weight === currentWeight)
         && (!currentTag || book.tags.indexOf(currentTag) !== -1)
         && words.every(function (word) { return book.text.indexOf(word) !== -1; });
       book.article.hidden = !visible;
@@ -252,16 +277,24 @@ button:focus-visible,
     noResults.hidden = visibleCount > 0;
 
     filterButtons.forEach(function (button) {
-      var pressed = button.hasAttribute('data-tag')
-        ? button.getAttribute('data-tag') === currentTag
-        : button.getAttribute('data-weight') === currentWeight;
+      var pressed;
+      if (button.hasAttribute('data-genre')) {
+        pressed = button.getAttribute('data-genre') === currentGenre;
+      } else if (button.hasAttribute('data-tag')) {
+        pressed = button.getAttribute('data-tag') === currentTag;
+      } else {
+        pressed = button.getAttribute('data-weight') === currentWeight;
+      }
       button.setAttribute('aria-pressed', String(pressed));
     });
   }
 
   filterButtons.forEach(function (button) {
     button.addEventListener('click', function () { // もう一度押すと解除する
-      if (button.hasAttribute('data-tag')) {
+      if (button.hasAttribute('data-genre')) {
+        var genre = button.getAttribute('data-genre');
+        currentGenre = currentGenre === genre ? '' : genre;
+      } else if (button.hasAttribute('data-tag')) {
         var tag = button.getAttribute('data-tag');
         currentTag = currentTag === tag ? '' : tag;
       } else {
