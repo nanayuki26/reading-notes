@@ -153,24 +153,16 @@ button:focus-visible,
 <div class="page">
 <header>
 <h1>読書備忘録</h1>
-<p class="updated">5冊 ・ 最終更新 2026-11-03</p>
-<button type="button" id="toggle-all" class="toggle-all">すべてのネタバレを表示</button>
+<p class="updated">2冊 ・ 最終更新 2026-11-03</p>
+
 </header>
 <div class="controls">
 <input type="search" id="search" class="search" placeholder="タイトル・著者・ジャンル・タグ・感想を検索" aria-label="本を検索">
-<div class="filters" role="group" aria-label="ジャンルで絞り込み"><button type="button" class="filter-button" data-genre="SF" aria-pressed="false">SF</button><button type="button" class="filter-button" data-genre="ミステリー" aria-pressed="false">ミステリー</button></div>
+<div class="filters" role="group" aria-label="ジャンルで絞り込み"><button type="button" class="filter-button" data-genre="SF" aria-pressed="false">SF</button></div>
 <div class="filters" role="group" aria-label="読む重さで絞り込み"><button type="button" class="filter-button" data-weight="light" aria-pressed="false">軽め</button><button type="button" class="filter-button" data-weight="medium" aria-pressed="false">ふつう</button></div>
 <div class="filters" role="group" aria-label="タグで絞り込み"><button type="button" class="filter-button" data-tag="キャラクター〇" aria-pressed="false">#キャラクター〇</button><button type="button" class="filter-button" data-tag="テストタグA" aria-pressed="false">#テストタグA</button><button type="button" class="filter-button" data-tag="テンポ〇" aria-pressed="false">#テンポ〇</button></div>
 </div>
 <main>
-<article class="book">
-<h2 class="book-title">テスト2　直接公開できるか</h2>
-<p class="book-author">ああ</p>
-<p class="stars" aria-label="評価 3 / 5">★★★☆☆</p>
-<div class="filters book-tags"><button type="button" class="filter-button" data-genre="ミステリー" aria-pressed="false">ミステリー</button><button type="button" class="filter-button" data-weight="medium" aria-pressed="false">ふつう</button><button type="button" class="filter-button" data-tag="テンポ〇" aria-pressed="false">#テンポ〇</button><button type="button" class="filter-button" data-tag="キャラクター〇" aria-pressed="false">#キャラクター〇</button></div>
-<button type="button" class="spoiler-toggle" aria-expanded="false" aria-controls="spoiler-0">ネタバレを見る</button>
-<div id="spoiler-0" class="spoiler" hidden><p class="review">@</p></div>
-</article>
 <article class="book">
 <h2 class="book-title">ピラネージ</h2>
 <p class="book-author">Susanna Clarke</p>
@@ -182,20 +174,6 @@ button:focus-visible,
 <p class="book-author">Andy Weir</p>
 <p class="stars" aria-label="評価 5 / 5">★★★★★</p>
 <div class="filters book-tags"><button type="button" class="filter-button" data-genre="SF" aria-pressed="false">SF</button><button type="button" class="filter-button" data-weight="light" aria-pressed="false">軽め</button><button type="button" class="filter-button" data-tag="キャラクター〇" aria-pressed="false">#キャラクター〇</button><button type="button" class="filter-button" data-tag="テンポ〇" aria-pressed="false">#テンポ〇</button></div>
-</article>
-<article class="book">
-<h2 class="book-title">テスト本</h2>
-<p class="book-author">ああああ</p>
-<p class="stars" aria-label="評価 4 / 5">★★★★☆</p>
-<div class="filters book-tags"><button type="button" class="filter-button" data-genre="ミステリー" aria-pressed="false">ミステリー</button></div>
-<p class="review">ネタバレなし　犯人はAAA</p>
-<button type="button" class="spoiler-toggle" aria-expanded="false" aria-controls="spoiler-3">ネタバレを見る</button>
-<div id="spoiler-3" class="spoiler" hidden><p class="review">ねたばれあり　犯人はBBB</p></div>
-</article>
-<article class="book">
-<h2 class="book-title">テスト用の本</h2>
-<p class="stars" aria-label="評価 2 / 5">★★☆☆☆</p>
-<div class="filters book-tags"><button type="button" class="filter-button" data-genre="SF" aria-pressed="false">SF</button><button type="button" class="filter-button" data-weight="medium" aria-pressed="false">ふつう</button><button type="button" class="filter-button" data-tag="キャラクター〇" aria-pressed="false">#キャラクター〇</button><button type="button" class="filter-button" data-tag="テンポ〇" aria-pressed="false">#テンポ〇</button><button type="button" class="filter-button" data-tag="テストタグA" aria-pressed="false">#テストタグA</button></div>
 </article>
 <p id="no-results" class="empty" role="status" hidden>条件に合う本はありません。</p>
 </main>
