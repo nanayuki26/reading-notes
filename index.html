@@ -17,6 +17,7 @@
   --primary: #33594f;
   --star: #a8701a;
   --spoiler: #f1e9dc;
+  --mark-bg: #f6e2a0;
 }
 @media (prefers-color-scheme: dark) {
   :root {
@@ -28,6 +29,7 @@
     --primary: #7fb5a5;
     --star: #e2b25e;
     --spoiler: #35312c;
+    --mark-bg: #5c4a17;
   }
 }
 * { box-sizing: border-box; }
@@ -39,7 +41,7 @@ body {
   line-height: 1.7;
 }
 .page {
-  max-width: 680px;
+  max-width: 720px;
   margin: 0 auto;
   padding: 32px 16px 48px;
 }
@@ -55,25 +57,51 @@ h1 {
   font-size: 0.85rem;
 }
 button {
-  min-height: 42px;
+  min-height: 40px;
   padding: 8px 14px;
-  border: 1px solid var(--primary);
+  border: 1px solid var(--border);
   border-radius: 8px;
-  background: transparent;
-  color: var(--primary);
+  background: var(--surface);
+  color: var(--text);
   font: inherit;
-  font-size: 0.92rem;
+  font-size: 0.9rem;
   cursor: pointer;
 }
+button:hover { border-color: var(--text); }
 button:focus-visible,
+select:focus-visible,
 .search:focus-visible {
   outline: 2px solid var(--primary);
   outline-offset: 2px;
 }
-.controls { margin-bottom: 20px; }
+button[aria-pressed="true"],
+.page-number[aria-current="page"] {
+  border-color: var(--text);
+  background: var(--text);
+  color: var(--background);
+}
+.chip {
+  min-height: 30px;
+  padding: 1px 10px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  overflow-wrap: anywhere;
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.chips:empty { display: none; }
+.note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
 .search {
   width: 100%;
-  min-height: 42px;
+  min-height: 40px;
+  margin-bottom: 12px;
   padding: 7px 10px;
   border: 1px solid var(--border);
   border-radius: 8px;
@@ -81,54 +109,137 @@ button:focus-visible,
   color: var(--text);
   font: inherit;
 }
-.filters {
+select {
+  min-height: 36px;
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+}
+.field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+/* 絞り込み。行ごとに見出しを付け、タグの一覧は必要なときだけ開く */
+.filter-panel {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 20px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+}
+.filter-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 10px;
+  align-items: center;
+  gap: 8px 16px;
 }
-.filter-button {
+.filter-label { flex: 0 0 4.5em; }
+.filter-row > .filter-label {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+.tag-picker {
+  padding: 10px 0 0 calc(4.5em + 16px);
+  border-top: 1px dashed var(--border);
+}
+.tag-search {
+  max-width: 280px;
+  min-height: 34px;
+  margin-bottom: 10px;
+}
+.reset-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -4px;
+}
+.list-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+  scroll-margin-top: 16px;
+}
+.list-toolbar[hidden] { display: none; }
+.layout-toggle { display: flex; }
+.layout-button {
   min-height: 32px;
-  padding: 2px 10px;
-  border-color: var(--border);
-  border-radius: 999px;
-  color: var(--text);
+  padding: 4px 12px;
   font-size: 0.82rem;
-  overflow-wrap: anywhere;
 }
-.filter-button[aria-pressed="true"] {
-  border-color: var(--primary);
-  background: var(--primary);
-  color: var(--background);
+.layout-button:first-child { border-radius: 8px 0 0 8px; }
+.layout-button:last-child {
+  margin-left: -1px;
+  border-radius: 0 8px 8px 0;
+}
+/* 本のカード */
+.book-list {
+  display: grid;
+  gap: 12px;
 }
 .book {
-  margin-bottom: 14px;
-  padding: 18px;
+  padding: 16px 18px;
   border: 1px solid var(--border);
   border-radius: 10px;
   background: var(--surface);
 }
+.book[hidden] { display: none; }
+.book-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 12px;
+}
+.book-heading {
+  flex: 1 1 100%;
+  min-width: 0;
+}
 .book-title {
   margin: 0;
-  font-size: 1.15rem;
+  font-size: 1.1rem;
   line-height: 1.45;
   overflow-wrap: anywhere;
 }
 .book-author {
   margin: 2px 0 0;
   color: var(--muted);
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   overflow-wrap: anywhere;
 }
 .stars {
-  margin: 6px 0 0;
+  margin: 4px 0 0;
   color: var(--star);
   letter-spacing: 2px;
 }
+.details-toggle { display: none; }
+.book-chips { margin-top: 10px; }
 .review {
   margin: 10px 0 0;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
+}
+/* 長い感想は最初の3行だけ見せ、「続きを読む」で開く */
+.review.is-clamped {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+.more-button,
+.spoiler-toggle {
+  min-height: 32px;
+  margin-top: 6px;
+  padding: 2px 12px;
+  font-size: 0.85rem;
 }
 .spoiler-toggle { margin-top: 12px; }
 .spoiler {
@@ -143,10 +254,83 @@ button:focus-visible,
   font-size: 0.85rem;
   overflow-wrap: anywhere;
 }
+/* コンパクト表示。1冊を1行にし、「詳しく」で中身を開く */
+.book-list.compact {
+  gap: 0;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+}
+.compact .book {
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 0;
+  background: none;
+}
+.compact .book + .book { border-top: 1px solid var(--border); }
+.compact .book-head { align-items: center; }
+.compact .book-heading {
+  display: flex;
+  flex: 1 1 200px;
+  align-items: baseline;
+  gap: 4px 10px;
+}
+.compact .book-title,
+.compact .book-author {
+  overflow: hidden;
+  margin: 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.compact .book-title { font-size: 0.95rem; }
+.compact .stars { margin: 0; }
+.compact .details-toggle { display: inline-block; }
+.compact .book:not(.is-open) .book-details { display: none; }
+.compact .book.is-open .book-details { padding-bottom: 6px; }
+.search-mark {
+  border-radius: 2px;
+  background: var(--mark-bg);
+  color: inherit;
+}
+/* ページ切り替え。先頭・最後のページの前へ・次へは隠さず暗くする */
+.pagination {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  margin: 20px 0 8px;
+}
+.pagination[hidden] { display: none; }
+.pagination-pages {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.page-number { min-width: 40px; }
+.page-step:disabled {
+  border-color: var(--border);
+  opacity: 0.45;
+  cursor: default;
+}
+.page-gap {
+  min-width: 20px;
+  color: var(--muted);
+  text-align: center;
+}
+.to-top {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 20%);
+}
 .empty {
   padding: 32px 0;
   color: var(--muted);
   text-align: center;
+}
+@media (max-width: 559px) {
+  .tag-picker { padding-left: 0; }
 }
 </style>
 </head>
@@ -155,36 +339,58 @@ button:focus-visible,
 <header>
 <h1>読書備忘録</h1>
 <p class="updated">3冊 ・ 最終更新 2026-11-03</p>
-
+<button type="button" id="toggle-all" class="chip toggle-all">すべてのネタバレを表示</button>
 </header>
-<div class="controls">
-<input type="search" id="search" class="search" placeholder="タイトル・著者・ジャンル・タグ・感想を検索" aria-label="本を検索">
-<div class="filters" role="group" aria-label="ジャンルで絞り込み"><button type="button" class="filter-button" data-genre="SF" aria-pressed="false">SF</button><button type="button" class="filter-button" data-genre="サスペンス" aria-pressed="false">サスペンス</button></div>
-<div class="filters" role="group" aria-label="読む重さで絞り込み"><button type="button" class="filter-button" data-weight="light" aria-pressed="false">軽め</button><button type="button" class="filter-button" data-weight="medium" aria-pressed="false">ふつう</button></div>
-<div class="filters" role="group" aria-label="タグで絞り込み"><button type="button" class="filter-button" data-tag="キャラクター〇" aria-pressed="false">#キャラクター〇</button><button type="button" class="filter-button" data-tag="テストタグA" aria-pressed="false">#テストタグA</button><button type="button" class="filter-button" data-tag="テンポ〇" aria-pressed="false">#テンポ〇</button></div>
+<input type="search" id="search" class="search" placeholder="タイトル・著者・ジャンル・タグ・感想を検索（/ で移動）" aria-label="本を検索">
+<div class="filter-panel">
+<div class="filter-row"><label class="field"><span class="filter-label">ジャンル</span><select id="genre-select"><option value="" data-label="すべて">すべて</option><option value="SF" data-label="SF">SF</option><option value="サスペンス" data-label="サスペンス">サスペンス</option></select></label><label class="field"><span>重さ</span><select id="weight-select"><option value="" data-label="すべて">すべて</option><option value="light" data-label="軽め">軽め</option><option value="medium" data-label="ふつう">ふつう</option></select></label><label class="field"><span>並び替え</span><select id="sort-select"><option value="order">新しく読んだ順</option><option value="rating">評価の高い順</option><option value="title">タイトル順</option></select></label></div>
+<div class="filter-row">
+<span class="filter-label">タグ</span>
+<div id="selected-tags" class="chips" role="group" aria-label="選んでいるタグ"></div>
+<button type="button" id="tag-picker-button" class="chip" aria-expanded="false" aria-controls="tag-picker">タグを選ぶ（3）</button>
 </div>
-<main>
-<article class="book">
-<h2 class="book-title">ピラネージ</h2>
-<p class="book-author">Susanna Clarke</p>
-<p class="stars" aria-label="評価 3 / 5">★★★☆☆</p>
-<div class="filters book-tags"><button type="button" class="filter-button" data-genre="SF" aria-pressed="false">SF</button><button type="button" class="filter-button" data-weight="medium" aria-pressed="false">ふつう</button><button type="button" class="filter-button" data-tag="テストタグA" aria-pressed="false">#テストタグA</button></div>
+<div id="tag-picker" class="tag-picker" hidden>
+<input type="search" id="tag-search" class="search tag-search" placeholder="タグを探す" aria-label="タグを探す" autocomplete="off">
+<div id="tag-list" class="chips" role="group" aria-label="タグで絞り込み"><button type="button" class="chip filter-chip" data-tag="キャラクター〇" aria-pressed="false">#キャラクター〇 <span class="count"></span></button><button type="button" class="chip filter-chip" data-tag="テストタグA" aria-pressed="false">#テストタグA <span class="count"></span></button><button type="button" class="chip filter-chip" data-tag="テンポ〇" aria-pressed="false">#テンポ〇 <span class="count"></span></button></div>
+<p id="tag-empty" class="note" hidden>該当するタグはありません。</p>
+</div>
+<div class="reset-row"><button type="button" id="reset-button" class="chip" title="検索・絞り込みを外し、新しく読んだ順に戻す">条件をリセット</button></div>
+</div>
+<div id="list-toolbar" class="list-toolbar">
+<p id="list-range" class="note"></p>
+<div class="layout-toggle" role="group" aria-label="一覧の表示">
+<button type="button" class="layout-button" data-layout="card" aria-pressed="true">カード</button>
+<button type="button" class="layout-button" data-layout="compact" aria-pressed="false">コンパクト</button>
+</div>
+</div>
+<main id="book-list" class="book-list">
+<article class="book" data-order="0" data-rating="3" data-genre="SF" data-weight="medium">
+<div class="book-head"><div class="book-heading"><h2 class="book-title">ピラネージ</h2><p class="book-author">Susanna Clarke</p></div><p class="stars" aria-label="評価 3 / 5">★★★☆☆</p><button type="button" class="chip details-toggle" aria-expanded="false" aria-controls="details-0">詳しく</button></div>
+<div id="details-0" class="book-details"><div class="chips book-chips"><button type="button" class="chip filter-chip" data-genre="SF" aria-pressed="false">SF</button><button type="button" class="chip filter-chip" data-weight="medium" aria-pressed="false">ふつう</button><button type="button" class="chip filter-chip" data-tag="テストタグA" aria-pressed="false">#テストタグA</button></div></div>
 </article>
-<article class="book">
-<h2 class="book-title">法廷占拠 : 爆弾 2</h2>
-<p class="book-author">呉勝浩</p>
-<p class="stars" aria-label="評価 4 / 5">★★★★☆</p>
-<div class="filters book-tags"><button type="button" class="filter-button" data-genre="サスペンス" aria-pressed="false">サスペンス</button><button type="button" class="filter-button" data-weight="medium" aria-pressed="false">ふつう</button></div>
+<article class="book" data-order="1" data-rating="4" data-genre="サスペンス" data-weight="medium">
+<div class="book-head"><div class="book-heading"><h2 class="book-title">法廷占拠 : 爆弾 2</h2><p class="book-author">呉勝浩</p></div><p class="stars" aria-label="評価 4 / 5">★★★★☆</p><button type="button" class="chip details-toggle" aria-expanded="false" aria-controls="details-1">詳しく</button></div>
+<div id="details-1" class="book-details"><div class="chips book-chips"><button type="button" class="chip filter-chip" data-genre="サスペンス" aria-pressed="false">サスペンス</button><button type="button" class="chip filter-chip" data-weight="medium" aria-pressed="false">ふつう</button></div></div>
 </article>
-<article class="book">
-<h2 class="book-title">プロジェクト・ヘイル・メアリー</h2>
-<p class="book-author">Andy Weir</p>
-<p class="stars" aria-label="評価 5 / 5">★★★★★</p>
-<div class="filters book-tags"><button type="button" class="filter-button" data-genre="SF" aria-pressed="false">SF</button><button type="button" class="filter-button" data-weight="light" aria-pressed="false">軽め</button><button type="button" class="filter-button" data-tag="キャラクター〇" aria-pressed="false">#キャラクター〇</button><button type="button" class="filter-button" data-tag="テンポ〇" aria-pressed="false">#テンポ〇</button></div>
+<article class="book" data-order="2" data-rating="5" data-genre="SF" data-weight="light">
+<div class="book-head"><div class="book-heading"><h2 class="book-title">プロジェクト・ヘイル・メアリー</h2><p class="book-author">Andy Weir</p></div><p class="stars" aria-label="評価 5 / 5">★★★★★</p><button type="button" class="chip details-toggle" aria-expanded="false" aria-controls="details-2">詳しく</button></div>
+<div id="details-2" class="book-details"><div class="chips book-chips"><button type="button" class="chip filter-chip" data-genre="SF" aria-pressed="false">SF</button><button type="button" class="chip filter-chip" data-weight="light" aria-pressed="false">軽め</button><button type="button" class="chip filter-chip" data-tag="キャラクター〇" aria-pressed="false">#キャラクター〇</button><button type="button" class="chip filter-chip" data-tag="テンポ〇" aria-pressed="false">#テンポ〇</button></div>
+<div class="review-box"><p class="review">最高</p><button type="button" class="more-button" aria-expanded="false" hidden>続きを読む</button></div>
+<button type="button" class="spoiler-toggle" aria-expanded="false" aria-controls="spoiler-2">ネタバレを見る</button>
+<div id="spoiler-2" class="spoiler" hidden><p class="review">ロッキー</p></div></div>
 </article>
-<p id="no-results" class="empty" role="status" hidden>条件に合う本はありません。</p>
 </main>
+<p id="no-results" class="empty" role="status" hidden>条件に合う本はありません。</p>
+<nav id="pagination" class="pagination" aria-label="本の一覧のページ">
+<div class="pagination-pages">
+<button type="button" id="page-prev" class="page-step">‹ 前へ</button>
+<span id="page-numbers" class="pagination-pages"></span>
+<button type="button" id="page-next" class="page-step">次へ ›</button>
 </div>
+<label class="field"><span>1ページの表示数</span><select id="page-size"><option value="20">20件</option><option value="50">50件</option><option value="100">100件</option></select></label>
+</nav>
+</div>
+<button type="button" id="to-top" class="to-top" hidden>↑ 上へ戻る</button>
 <script>
 (function () {
   var buttons = Array.prototype.slice.call(document.querySelectorAll('.spoiler-toggle'));
@@ -216,85 +422,413 @@ button:focus-visible,
   });
 })();
 
+// 下へスクロールしたら「上へ戻る」を出す
+(function () {
+  var toTop = document.getElementById('to-top');
+  window.addEventListener('scroll', function () {
+    toTop.hidden = window.scrollY < window.innerHeight;
+  }, { passive: true });
+  toTop.addEventListener('click', function () {
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
+  });
+})();
+
 (function () {
   var searchInput = document.getElementById('search');
   if (!searchInput) return;
 
+  var list = document.getElementById('book-list');
   var noResults = document.getElementById('no-results');
-  var filterButtons = Array.prototype.slice.call(document.querySelectorAll('.filter-button'));
-  var currentGenre = '';
-  var currentWeight = '';
-  var currentTag = '';
+  var genreSelect = document.getElementById('genre-select');
+  var weightSelect = document.getElementById('weight-select');
+  var sortSelect = document.getElementById('sort-select');
+  var selectedTags = document.getElementById('selected-tags');
+  var tagPickerButton = document.getElementById('tag-picker-button');
+  var tagPicker = document.getElementById('tag-picker');
+  var tagSearch = document.getElementById('tag-search');
+  var tagEmpty = document.getElementById('tag-empty');
+  var tagButtons = Array.prototype.slice.call(document.querySelectorAll('#tag-list [data-tag]'));
+  var listToolbar = document.getElementById('list-toolbar');
+  var listRange = document.getElementById('list-range');
+  var layoutButtons = Array.prototype.slice.call(document.querySelectorAll('.layout-button'));
+  var pagination = document.getElementById('pagination');
+  var pageNumbers = document.getElementById('page-numbers');
+  var pagePrev = document.getElementById('page-prev');
+  var pageNext = document.getElementById('page-next');
+  var pageSizeSelect = document.getElementById('page-size');
+
+  // 表示数と表示の形だけを、見る人のブラウザに残す（本のデータは残さない）
+  function loadSetting(key, fallback) {
+    try {
+      return localStorage.getItem('reading-notes:' + key) || fallback;
+    } catch (error) {
+      return fallback;
+    }
+  }
+  function saveSetting(key, value) {
+    try {
+      localStorage.setItem('reading-notes:' + key, value);
+    } catch (error) {
+      // 残せなくても、開いている間は使える
+    }
+  }
+
+  var savedSize = Number(loadSetting('page-size', '20'));
+  var state = {
+    search: '', genre: '', weight: '', tags: [], sort: 'order', page: 1,
+    pageSize: [20, 50, 100].indexOf(savedSize) !== -1 ? savedSize : 20,
+    layout: loadSetting('layout', 'card') === 'compact' ? 'compact' : 'card',
+    pickerOpen: false, tagQuery: '',
+  };
+  var lastKey = '';
 
   function toComparable(text) {
     return text.normalize('NFKC').toLowerCase();
   }
-
-  // ネタバレは検索の対象にしない
-  function readSearchText(article) {
-    return toComparable(Array.prototype.slice.call(article.children)
-      .filter(function (element) { return !element.matches('.spoiler, .spoiler-toggle, .stars'); })
-      .map(function (element) { return element.textContent; })
-      .join('\n'));
+  // カタカナとひらがなを同じに扱う
+  function toTagKey(text) {
+    return toComparable(text).replace(/[\u30a1-\u30f6]/g, function (c) {
+      return String.fromCharCode(c.charCodeAt(0) - 0x60);
+    });
   }
 
-  var books = Array.prototype.slice.call(document.querySelectorAll('.book')).map(function (article) {
-    var genreButton = article.querySelector('[data-genre]');
-    var weightButton = article.querySelector('[data-weight]');
+  // 検索の対象はタイトル・著者・ジャンル・重さ・タグ・ネタバレなしの感想。ネタバレは入れない
+  var books = Array.prototype.slice.call(list.querySelectorAll('.book')).map(function (article) {
+    var title = article.querySelector('.book-title');
+    var author = article.querySelector('.book-author');
+    var review = article.querySelector('.review-box .review');
+    var chips = Array.prototype.slice.call(article.querySelectorAll('.book-chips .chip'));
     return {
       article: article,
-      text: readSearchText(article),
-      genre: genreButton ? genreButton.getAttribute('data-genre') : '',
-      weight: weightButton ? weightButton.getAttribute('data-weight') : '',
-      tags: Array.prototype.slice.call(article.querySelectorAll('[data-tag]')).map(function (button) {
-        return button.getAttribute('data-tag');
+      order: Number(article.getAttribute('data-order')),
+      rating: Number(article.getAttribute('data-rating')),
+      genre: article.getAttribute('data-genre'),
+      weight: article.getAttribute('data-weight'),
+      tags: chips.filter(function (chip) { return chip.hasAttribute('data-tag'); })
+        .map(function (chip) { return chip.getAttribute('data-tag'); }),
+      marked: [title, author, review].filter(Boolean).map(function (element) {
+        return { element: element, text: element.textContent };
       }),
+      titleText: title.textContent,
+      review: review,
+      moreButton: article.querySelector('.more-button'),
+      text: toComparable([title, author, review].concat(chips).filter(Boolean)
+        .map(function (element) { return element.textContent; }).join('\n')),
     };
   });
 
-  function update() {
-    var words = toComparable(searchInput.value).split(/\s+/).filter(Boolean);
-    var visibleCount = 0;
+  function searchWords() {
+    return toComparable(state.search).split(/\s+/).filter(Boolean);
+  }
 
-    books.forEach(function (book) {
-      var visible = (!currentGenre || book.genre === currentGenre)
-        && (!currentWeight || book.weight === currentWeight)
-        && (!currentTag || book.tags.indexOf(currentTag) !== -1)
-        && words.every(function (word) { return book.text.indexOf(word) !== -1; });
-      book.article.hidden = !visible;
-      if (visible) visibleCount += 1;
-    });
-    noResults.hidden = visibleCount > 0;
+  // skip に渡した条件は外して判定する（選択肢の冊数を数えるため）
+  function matches(book, skip) {
+    if (skip !== 'genre' && state.genre && book.genre !== state.genre) return false;
+    if (skip !== 'weight' && state.weight && book.weight !== state.weight) return false;
+    if (!state.tags.every(function (tag) { return book.tags.indexOf(tag) !== -1; })) return false;
+    var words = searchWords();
+    return words.every(function (word) { return book.text.indexOf(word) !== -1; });
+  }
 
-    filterButtons.forEach(function (button) {
-      var pressed;
-      if (button.hasAttribute('data-genre')) {
-        pressed = button.getAttribute('data-genre') === currentGenre;
-      } else if (button.hasAttribute('data-tag')) {
-        pressed = button.getAttribute('data-tag') === currentTag;
-      } else {
-        pressed = button.getAttribute('data-weight') === currentWeight;
+  var SORTS = {
+    order: function (a, b) { return a.order - b.order; },
+    rating: function (a, b) { return b.rating - a.rating || a.order - b.order; },
+    title: function (a, b) { return a.titleText.localeCompare(b.titleText, 'ja') || a.order - b.order; },
+  };
+
+  // 検索語を <mark> で囲む。全角半角の違いまでは合わせず、書いたとおりの文字を探す
+  function applyMarks(item) {
+    var element = item.element;
+    var text = item.text;
+    var words = state.search.trim().split(/\s+/).filter(Boolean).map(function (word) { return word.toLowerCase(); });
+    var lower = text.toLowerCase();
+    element.textContent = '';
+    if (words.length === 0 || lower.length !== text.length) {
+      element.textContent = text;
+      return;
+    }
+    var marked = new Array(text.length).fill(false);
+    words.forEach(function (word) {
+      for (var start = lower.indexOf(word); start !== -1; start = lower.indexOf(word, start + word.length)) {
+        marked.fill(true, start, start + word.length);
       }
-      button.setAttribute('aria-pressed', String(pressed));
+    });
+    var start = 0;
+    for (var index = 1; index <= text.length; index += 1) {
+      if (index === text.length || marked[index] !== marked[start]) {
+        var part = text.slice(start, index);
+        if (marked[start]) {
+          var mark = document.createElement('mark');
+          mark.className = 'search-mark';
+          mark.textContent = part;
+          element.appendChild(mark);
+        } else {
+          element.appendChild(document.createTextNode(part));
+        }
+        start = index;
+      }
+    }
+  }
+
+  // 3行に収まらない感想だけ「続きを読む」を出す。見えていない感想は測れないので、見えたときに測る
+  function updateClamp(book) {
+    if (!book.review || book.moreButton.getAttribute('aria-expanded') === 'true') return;
+    book.review.classList.add('is-clamped');
+    if (book.review.offsetParent === null) return;
+    var overflows = book.review.scrollHeight > book.review.clientHeight + 1;
+    book.moreButton.hidden = !overflows;
+    if (!overflows) book.review.classList.remove('is-clamped');
+  }
+
+  // 表示するページ番号の並び。多いときは「1 … 4 5 6 … 12」のように途中を省く（null が「…」）
+  function pageItems(page, total) {
+    var result = [];
+    if (total <= 7) {
+      for (var number = 1; number <= total; number += 1) result.push(number);
+      return result;
+    }
+    var pages = [1, page - 1, page, page + 1, total].filter(function (value, index, all) {
+      return value >= 1 && value <= total && all.indexOf(value) === index;
+    }).sort(function (a, b) { return a - b; });
+    pages.forEach(function (value, index) {
+      if (index > 0 && value - pages[index - 1] > 1) result.push(null);
+      result.push(value);
+    });
+    return result;
+  }
+
+  function updateOptions(select, kind) {
+    if (!select) return;
+    Array.prototype.slice.call(select.options).forEach(function (option) {
+      var count = books.filter(function (book) {
+        return matches(book, kind) && (!option.value || book[kind] === option.value);
+      }).length;
+      option.textContent = option.getAttribute('data-label') + '（' + count + '）';
+    });
+    select.value = state[kind];
+  }
+
+  function renderTags(visibleBooks) {
+    if (!selectedTags) return;
+    selectedTags.textContent = '';
+    state.tags.forEach(function (tag) {
+      var button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'chip';
+      button.setAttribute('aria-pressed', 'true');
+      button.setAttribute('aria-label', 'タグ「' + tag + '」の絞り込みを外す');
+      button.textContent = '#' + tag + ' ×';
+      button.addEventListener('click', function () { toggleTag(tag); });
+      selectedTags.appendChild(button);
+    });
+    tagPickerButton.textContent = state.pickerOpen ? 'タグの一覧を閉じる' : 'タグを選ぶ（' + tagButtons.length + '）';
+    tagPickerButton.setAttribute('aria-expanded', String(state.pickerOpen));
+    tagPicker.hidden = !state.pickerOpen;
+    var query = toTagKey(state.tagQuery.trim());
+    var shown = 0;
+    tagButtons.forEach(function (button) {
+      var tag = button.getAttribute('data-tag');
+      button.hidden = query !== '' && toTagKey(tag).indexOf(query) === -1;
+      if (!button.hidden) shown += 1;
+      button.querySelector('.count').textContent = visibleBooks.filter(function (book) {
+        return book.tags.indexOf(tag) !== -1;
+      }).length;
+    });
+    tagEmpty.hidden = shown > 0;
+  }
+
+  function renderPagination(total, pageCount) {
+    pagination.hidden = total === 0;
+    listToolbar.hidden = total === 0;
+    var first = (state.page - 1) * state.pageSize + 1;
+    listRange.textContent = total + '冊中 ' + first + '〜' + Math.min(state.page * state.pageSize, total) + '冊目';
+    pagePrev.disabled = state.page <= 1;
+    pageNext.disabled = state.page >= pageCount;
+    pageNumbers.textContent = '';
+    pageItems(state.page, pageCount).forEach(function (page) {
+      var item;
+      if (page === null) {
+        item = document.createElement('span');
+        item.className = 'page-gap';
+        item.textContent = '…';
+      } else {
+        item = document.createElement('button');
+        item.type = 'button';
+        item.className = 'page-number';
+        item.textContent = String(page);
+        item.setAttribute('aria-label', page + 'ページ目');
+        if (page === state.page) item.setAttribute('aria-current', 'page');
+        item.addEventListener('click', function () { goToPage(page); });
+      }
+      pageNumbers.appendChild(item);
+    });
+    pageSizeSelect.value = String(state.pageSize);
+  }
+
+  function update() {
+    // 条件が変わったら1ページ目に戻す
+    var key = JSON.stringify([state.search, state.genre, state.weight, state.tags, state.sort, state.pageSize]);
+    if (key !== lastKey) state.page = 1;
+    lastKey = key;
+
+    var visibleBooks = books.filter(function (book) { return matches(book, null); }).sort(SORTS[state.sort]);
+    var pageCount = Math.max(1, Math.ceil(visibleBooks.length / state.pageSize));
+    state.page = Math.min(state.page, pageCount);
+    var pageStart = (state.page - 1) * state.pageSize;
+    var shownBooks = visibleBooks.slice(pageStart, pageStart + state.pageSize);
+
+    list.classList.toggle('compact', state.layout === 'compact');
+    books.forEach(function (book) { book.article.hidden = shownBooks.indexOf(book) === -1; });
+    shownBooks.forEach(function (book) {
+      list.appendChild(book.article); // 並び替えた順に並べ直す
+      book.marked.forEach(applyMarks);
+    });
+    shownBooks.forEach(updateClamp);
+    noResults.hidden = visibleBooks.length > 0;
+
+    updateOptions(genreSelect, 'genre');
+    updateOptions(weightSelect, 'weight');
+    sortSelect.value = state.sort;
+    renderTags(visibleBooks);
+    renderPagination(visibleBooks.length, pageCount);
+    layoutButtons.forEach(function (button) {
+      button.setAttribute('aria-pressed', String(button.getAttribute('data-layout') === state.layout));
+    });
+    Array.prototype.slice.call(document.querySelectorAll('.filter-chip')).forEach(function (chip) {
+      var pressed;
+      if (chip.hasAttribute('data-genre')) pressed = chip.getAttribute('data-genre') === state.genre;
+      else if (chip.hasAttribute('data-weight')) pressed = chip.getAttribute('data-weight') === state.weight;
+      else pressed = state.tags.indexOf(chip.getAttribute('data-tag')) !== -1;
+      chip.setAttribute('aria-pressed', String(pressed));
     });
   }
 
-  filterButtons.forEach(function (button) {
-    button.addEventListener('click', function () { // もう一度押すと解除する
-      if (button.hasAttribute('data-genre')) {
-        var genre = button.getAttribute('data-genre');
-        currentGenre = currentGenre === genre ? '' : genre;
-      } else if (button.hasAttribute('data-tag')) {
-        var tag = button.getAttribute('data-tag');
-        currentTag = currentTag === tag ? '' : tag;
-      } else {
-        var weight = button.getAttribute('data-weight');
-        currentWeight = currentWeight === weight ? '' : weight;
-      }
+  function goToPage(page) {
+    state.page = page;
+    update();
+    listToolbar.scrollIntoView({ block: 'start' });
+  }
+
+  function toggleTag(tag) {
+    state.tags = state.tags.indexOf(tag) !== -1
+      ? state.tags.filter(function (item) { return item !== tag; })
+      : state.tags.concat([tag]);
+    update();
+  }
+
+  // カードのジャンル・重さ・タグと、タグの一覧のボタン。もう一度押すと解除する
+  document.addEventListener('click', function (event) {
+    var chip = event.target.closest('.filter-chip');
+    if (!chip) return;
+    if (chip.hasAttribute('data-genre')) {
+      var genre = chip.getAttribute('data-genre');
+      state.genre = state.genre === genre ? '' : genre;
+    } else if (chip.hasAttribute('data-weight')) {
+      var weight = chip.getAttribute('data-weight');
+      state.weight = state.weight === weight ? '' : weight;
+    } else {
+      toggleTag(chip.getAttribute('data-tag'));
+      return;
+    }
+    update();
+  });
+
+  // コンパクト表示の「詳しく」と、感想の「続きを読む」
+  list.addEventListener('click', function (event) {
+    var toggle = event.target.closest('.details-toggle');
+    if (toggle) {
+      var article = toggle.closest('.book');
+      var open = !article.classList.contains('is-open');
+      article.classList.toggle('is-open', open);
+      toggle.setAttribute('aria-expanded', String(open));
+      toggle.textContent = open ? '閉じる' : '詳しく';
+      books.forEach(function (book) { if (book.article === article) updateClamp(book); });
+      return;
+    }
+    var more = event.target.closest('.more-button');
+    if (more) {
+      var expanded = more.getAttribute('aria-expanded') !== 'true';
+      more.setAttribute('aria-expanded', String(expanded));
+      more.textContent = expanded ? '閉じる' : '続きを読む';
+      more.parentNode.querySelector('.review').classList.toggle('is-clamped', !expanded);
+    }
+  });
+
+  searchInput.addEventListener('input', function () {
+    state.search = searchInput.value;
+    update();
+  });
+  if (genreSelect) {
+    genreSelect.addEventListener('change', function () {
+      state.genre = genreSelect.value;
+      update();
+    });
+  }
+  if (weightSelect) {
+    weightSelect.addEventListener('change', function () {
+      state.weight = weightSelect.value;
+      update();
+    });
+  }
+  sortSelect.addEventListener('change', function () {
+    state.sort = sortSelect.value;
+    update();
+  });
+  if (tagPickerButton) {
+    tagPickerButton.addEventListener('click', function () {
+      state.pickerOpen = !state.pickerOpen;
+      update();
+      if (state.pickerOpen) tagSearch.focus();
+    });
+    tagSearch.addEventListener('input', function () {
+      state.tagQuery = tagSearch.value;
+      update();
+    });
+  }
+  // 表示数と表示の形は好みの設定なので、リセットでは戻さない
+  document.getElementById('reset-button').addEventListener('click', function () {
+    state.search = '';
+    state.genre = '';
+    state.weight = '';
+    state.tags = [];
+    state.sort = 'order';
+    state.pickerOpen = false;
+    state.tagQuery = '';
+    searchInput.value = '';
+    if (tagSearch) tagSearch.value = '';
+    update();
+  });
+  layoutButtons.forEach(function (button) {
+    button.addEventListener('click', function () {
+      state.layout = button.getAttribute('data-layout');
+      saveSetting('layout', state.layout);
       update();
     });
   });
-  searchInput.addEventListener('input', update);
+  pagePrev.addEventListener('click', function () { goToPage(state.page - 1); });
+  pageNext.addEventListener('click', function () { goToPage(state.page + 1); });
+  pageSizeSelect.addEventListener('change', function () {
+    state.pageSize = Number(pageSizeSelect.value);
+    saveSetting('page-size', String(state.pageSize));
+    update();
+  });
+  // 幅が変わると感想の行数も変わるので測り直す
+  window.addEventListener('resize', function () {
+    books.forEach(function (book) {
+      if (!book.article.hidden) updateClamp(book);
+    });
+  });
+  // 「/」で検索欄へ移る。文字の入力中は、ふつうの「/」として扱う
+  document.addEventListener('keydown', function (event) {
+    if (event.key !== '/' || event.ctrlKey || event.metaKey || event.altKey || event.isComposing) return;
+    if (event.target.closest('input, textarea, select, [contenteditable]')) return;
+    event.preventDefault();
+    searchInput.focus();
+    searchInput.select();
+  });
+
+  update();
 })();
 </script>
 </body>
